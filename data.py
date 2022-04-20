@@ -20,7 +20,7 @@ class Data:
         indices = np.arange(self.data_amount)
         self.train_data, self.test_data, self.train_true_results, self.test_true_results, self.train_indices, \
         self.test_indices = \
-            train_test_split(self.data, self.true_results, indices, test_size=30, random_state=42, shuffle=True,
+            train_test_split(self.data, self.true_results, indices, test_size=0.3, random_state=42, shuffle=True,
                              stratify=self.true_results)
 
         np.save("train_indices.npy", self.train_indices)
