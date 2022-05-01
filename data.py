@@ -38,6 +38,12 @@ class Data:
 
         return self.train_data, self.test_data, self.train_true_results, self.test_true_results
 
+    def get_converted_train_test_split(self):
+        return np.array(self.train_data, np.float32), \
+               np.array(self.test_data, np.float32), \
+               np.array(self.train_true_results, np.int32), \
+               np.array(self.test_true_results, np.int32)
+
     def get_all_data(self):
         return self.data
 
