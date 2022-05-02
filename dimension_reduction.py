@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-
 class PCADimensionReduction:
     def __init__(self, train_data, train_true_results):
         self.train_data = train_data
@@ -21,9 +20,9 @@ class PCADimensionReduction:
         for index, components_amount in enumerate(components_amounts_list):
             pca = PCA(n_components=components_amount)
             pca.fit(self.train_data)
-            per_var = np.round(pca.explained_variance_ratio_*100, decimals=1)
+            per_var = np.round(pca.explained_variance_ratio_ * 100, decimals=1)
 
-            axis[index].bar(x=range(1, len(per_var)+1), height=per_var)
+            axis[index].bar(x=range(1, len(per_var) + 1), height=per_var)
             axis[index].set_ylabel('Percentage of Explained Variance')
             axis[index].set_xlabel('Principal Component')
             axis[index].set_title('Scree Plot of ' + str(components_amount) + ' components')
@@ -33,7 +32,7 @@ class PCADimensionReduction:
         pca = PCA(n_components=2)
         pca.fit(self.train_data)
         pca_data = pca.transform(self.train_data)
-        per_var = np.round(pca.explained_variance_ratio_*100, decimals=1)
+        per_var = np.round(pca.explained_variance_ratio_ * 100, decimals=1)
 
         cancer_cells_indices = np.where(self.train_true_results == 1)[0]
         healthy_cells_indices = np.where(self.train_true_results == 0)[0]
@@ -59,14 +58,12 @@ class PCADimensionReduction:
         sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
         top_variables = sorted_loading_scores[0:variables_amount]
         return top_variables
-        
-        
-        
-def display_umap_2d_plot():
-    reducer = umap.UMAP(n_neighbors=3) # n_neighbors=3 yields the best results
+
+
+def display_umap_2d_plot(train_data, train_true_results, seed):
+    reducer = umap.UMAP(n_neighbors=3, random_state=seed)  # n_neighbors=3 yields the best results
     scaled_train_data = StandardScaler().fit_transform(train_data)
     umap_data = reducer.fit_transform(scaled_train_data)
-
 
     cancer_cells_indices = np.where(train_true_results == 1)[0]
     healthy_cells_indices = np.where(train_true_results == 0)[0]
@@ -85,4 +82,3 @@ def display_umap_2d_plot():
 
     plt.legend()
     plt.show()
-
