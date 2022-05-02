@@ -1,5 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import precision_score,recall_score
 
 
 class FeatureImportance:
@@ -19,6 +21,19 @@ class FeatureImportance:
         clf.fit(self.train_data, self.train_true_results)
         print("Train accuracy: " + str(clf.score(self.train_data, self.train_true_results)))
         print("Test accuracy: " + str(clf.score(self.test_data, self.test_true_results)))
+
+        cm_train = confusion_matrix(self.train_true_results, clf.predict(self.train_data), labels=clf.classes_)
+        print("Train confusion matrix:\n" + str(cm_train)+"\nPrecision: "+
+              str(precision_score(self.train_true_results,clf.predict(self.train_data)))+"\nRecall: "+
+              str(recall_score(self.train_true_results,clf.predict(self.train_data))))
+        cm_test = confusion_matrix(self.test_true_results, clf.predict(self.test_data), labels=clf.classes_)
+        print("Test confusion matrix:\n"+str(cm_test)+"\nPrecision: "+
+              str(precision_score(self.test_true_results,clf.predict(self.test_data)))+"\nRecall: "+
+              str(recall_score(self.test_true_results,clf.predict(self.test_data))))
+        #disp = ConfusionMatrixDisplay(confusion_matrix=cm_test,display_labels = clf.classes_)
+        #disp.plot()
+        #plt.show()
+
         zipped = sorted(zip(clf.coef_.tolist()[0], self.columns))
         genes_that_matter = list(filter(lambda x: abs(x[0]) > self.IMPORTANCE_THRESHOLD, zipped))
         print("Number of genes that matter: " + str(len(genes_that_matter)) + " out of " + str(len(zipped)) +
