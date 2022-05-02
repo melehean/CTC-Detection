@@ -26,7 +26,7 @@ class PCADimensionReduction:
             axis[index].set_title('Scree Plot of ' + str(components_amount) + ' components')
         plt.show()
 
-    def display_2d_plot(self):
+    def display_pc1_pc2_plot(self):
         pca = PCA(n_components=2)
         pca.fit(self.train_data)
         pca_data = pca.transform(self.train_data)
@@ -49,7 +49,7 @@ class PCADimensionReduction:
         plt.legend()
         plt.show()
 
-    def get_most_important_variables_for_pc1(self, variables_amount):
+    def get_most_important_variables_from_pc1(self, variables_amount):
         pca = PCA()
         pca.fit(self.train_data)
         loading_scores = pd.Series(pca.components_[0], index=self.train_data.columns)
