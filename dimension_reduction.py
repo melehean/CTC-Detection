@@ -61,27 +61,28 @@ class PCADimensionReduction:
         return top_variables
         
         
-    def display_umap_2d_plot(self):
-        reducer = umap.UMAP(n_neighbors=3) # n_neighbors=3 yields the best results
-        scaled_train_data = StandardScaler().fit_transform(train_data)
-        umap_data = reducer.fit_transform(scaled_train_data)
+        
+def display_umap_2d_plot():
+    reducer = umap.UMAP(n_neighbors=3) # n_neighbors=3 yields the best results
+    scaled_train_data = StandardScaler().fit_transform(train_data)
+    umap_data = reducer.fit_transform(scaled_train_data)
 
 
-        cancer_cells_indices = np.where(train_true_results == 1)[0]
-        healthy_cells_indices = np.where(train_true_results == 0)[0]
+    cancer_cells_indices = np.where(train_true_results == 1)[0]
+    healthy_cells_indices = np.where(train_true_results == 0)[0]
 
-        umap_healthy_cells_data = umap_data[healthy_cells_indices]
-        umap_cancer_cells_data = umap_data[cancer_cells_indices]
+    umap_healthy_cells_data = umap_data[healthy_cells_indices]
+    umap_cancer_cells_data = umap_data[cancer_cells_indices]
 
-        umap_healthy_cell_df = pd.DataFrame(umap_healthy_cells_data, columns=('UMAP1', 'UMAP2'))
-        umap_cancer_cells_df = pd.DataFrame(umap_cancer_cells_data, columns=('UMAP1', 'UMAP2'))
+    umap_healthy_cell_df = pd.DataFrame(umap_healthy_cells_data, columns=('UMAP1', 'UMAP2'))
+    umap_cancer_cells_df = pd.DataFrame(umap_cancer_cells_data, columns=('UMAP1', 'UMAP2'))
 
-        plt.scatter(umap_healthy_cell_df.UMAP1, umap_healthy_cell_df.UMAP2, c='lightblue', label='other cells')
-        plt.scatter(umap_cancer_cells_df.UMAP1, umap_cancer_cells_df.UMAP2, c='red', label='CTC')
-        plt.xlabel('UMAP1')
-        plt.ylabel('UMAP2')
-        plt.title('UMAP projection of the CTC dataset', fontsize=24)
+    plt.scatter(umap_healthy_cell_df.UMAP1, umap_healthy_cell_df.UMAP2, c='lightblue', label='other cells')
+    plt.scatter(umap_cancer_cells_df.UMAP1, umap_cancer_cells_df.UMAP2, c='red', label='CTC')
+    plt.xlabel('UMAP1')
+    plt.ylabel('UMAP2')
+    plt.title('UMAP projection of the CTC dataset', fontsize=24)
 
-        plt.legend()
-        plt.show()
+    plt.legend()
+    plt.show()
 
