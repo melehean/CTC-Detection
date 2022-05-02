@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 class Data:
@@ -49,3 +50,9 @@ class Data:
 
     def get_all_true_results(self):
         return self.true_results
+
+    def get_scaled_train_test_data(self):
+        scaler = StandardScaler().fit(self.train_data)
+        scaled_train_data = pd.DataFrame(scaler.transform(self.train_data), columns=self.train_data.columns)
+        scaled_test_data = pd.DataFrame(scaler.transform(self.test_data), columns=self.test_data.columns)
+        return scaled_train_data, scaled_test_data
