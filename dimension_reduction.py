@@ -1,9 +1,9 @@
-from sklearn.decomposition import PCA
-import umap
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import umap
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 
 class PCADimensionReduction:
@@ -91,24 +91,33 @@ class PCADimensionReduction:
         return top_variables
 
 
-def display_umap_2d_plot(train_data, train_true_results, seed):
-    reducer = umap.UMAP(n_neighbors=3, random_state=seed)  # n_neighbors=3 yields the best results
-    umap_data = reducer.fit_transform(train_data)
+def display_2d_plot(reducer, label, train_data, train_true_results, seed):
+    data = reducer.fit_transform(train_data)
 
     cancer_cells_indices = np.where(train_true_results == 1)[0]
     healthy_cells_indices = np.where(train_true_results == 0)[0]
 
-    umap_healthy_cells_data = umap_data[healthy_cells_indices]
-    umap_cancer_cells_data = umap_data[cancer_cells_indices]
+    healthy_cells_data = data[healthy_cells_indices]
+    cancer_cells_data = data[cancer_cells_indices]
 
-    umap_healthy_cell_df = pd.DataFrame(umap_healthy_cells_data, columns=('UMAP1', 'UMAP2'))
-    umap_cancer_cells_df = pd.DataFrame(umap_cancer_cells_data, columns=('UMAP1', 'UMAP2'))
+    healthy_cell_df = pd.DataFrame(healthy_cells_data, columns=('A', 'B'))
+    cancer_cells_df = pd.DataFrame(cancer_cells_data, columns=('A', 'B'))
 
-    plt.scatter(umap_healthy_cell_df.UMAP1, umap_healthy_cell_df.UMAP2, c='lightblue', label='other cells')
-    plt.scatter(umap_cancer_cells_df.UMAP1, umap_cancer_cells_df.UMAP2, c='red', label='CTC')
-    plt.xlabel('UMAP1')
-    plt.ylabel('UMAP2')
-    plt.title('UMAP projection of the CTC dataset', fontsize=24)
+    plt.scatter(healthy_cell_df.A, healthy_cell_df.B, c='lightblue', label='other cells')
+    plt.scatter(cancer_cells_df.A, cancer_cells_df.B, c='red', label='CTC')
+    plt.xlabel(label + '1')
+    plt.ylabel(label + '2')
+    plt.title(label + ' projection of the CTC dataset', fontsize=24)
 
     plt.legend()
     plt.show()
+
+
+def display_umap_2d_plot(train_data, train_true_results, seed):
+    reducer = umap.UMAP(n_neighbors=3, random_state=seed)  # n_neighbors=3 yields the best results
+    display_2d_plot(reducer, 'UMAP', train_data, train_true_results, seed)
+
+
+def display_tsne_2d_plot(train_data, train_true_results, seed):
+    reducer = TSNE(n_components=3, learning_rate='auto', init='random', random_state=seed)
+    display_2d_plot(reducer, 'TSNE', train_data, train_true_results, seed)
