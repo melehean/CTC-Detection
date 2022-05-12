@@ -119,5 +119,5 @@ def display_umap_2d_plot(train_data, train_true_results, seed):
 
 
 def display_tsne_2d_plot(train_data, train_true_results, seed):
-    reducer = TSNE(n_components=3, learning_rate='auto', init='random', random_state=seed)
+    reducer = TSNE(learning_rate='auto', init='random', random_state=seed)
     display_2d_plot(reducer, 'TSNE', train_data, train_true_results, seed)
