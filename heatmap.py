@@ -12,5 +12,6 @@ class Heatmap:
         matrix = self.train_data.corr().round(2)
         mask = np.triu(np.ones_like(matrix, dtype=bool))
         sns.heatmap(matrix, annot=True, vmax=1, vmin=-1, center=0, cmap='vlag', mask=mask)
+        plt.show()
         sns.clustermap(self.train_data, annot=True, center=0, cmap='vlag')
         plt.show()
