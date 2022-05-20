@@ -56,3 +56,10 @@ class Data:
         scaled_train_data = pd.DataFrame(scaler.transform(self.train_data), columns=self.train_data.columns)
         scaled_test_data = pd.DataFrame(scaler.transform(self.test_data), columns=self.test_data.columns)
         return scaled_train_data, scaled_test_data
+
+    def get_cut_by_max_train_test_data(self, threshold):
+        columns_bool_values = self.train_data.max() > threshold
+        cut_by_max_train_data = self.train_data[self.train_data.columns[columns_bool_values]]
+        cut_by_max_test_data = self.test_data[self.test_data.columns[columns_bool_values]]
+        return cut_by_max_train_data, cut_by_max_test_data
+
