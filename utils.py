@@ -3,6 +3,7 @@ import scipy.stats as stats
 import scipy.cluster.hierarchy as sch
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 def draw_dendrogram(data, linkage_method, p):
@@ -11,6 +12,11 @@ def draw_dendrogram(data, linkage_method, p):
     plt.ylabel(f'kryterium łączenia klastrów ({linkage_method})',fontsize=15)
     plt.title(f'dendrogram dla kryterium: {linkage_method}',fontsize=15)
     plt.show
+    
+
+def draw_heatmap(data):
+    sns.clustermap(data)
+    plt.show()
 
 
 def calculate_statistics(data, true_results):
