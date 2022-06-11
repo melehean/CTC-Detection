@@ -40,12 +40,10 @@ def calculate_statistics(data, true_results):
     statistics["variance_check"] = variance_check_1 & variance_check_2
 
     t_statistics = np.where(statistics["variance_check"], stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = True).statistic, stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = False).statistic)
-    t_statistics[np.isnan(t_statistics)] = 0
     t_statistics = np.absolute(t_statistics)
     statistics['t_test'] = t_statistics
 
     p_values = np.where(statistics["variance_check"], stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = True).pvalue, stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = False).pvalue)
-    p_values[np.isnan(p_values)] = 0
     statistics['p_values'] = p_values
 
-    return statistics.sort_values(by="p_values", ascending=False)
+    return statistics.sort_values(by="p_values")
