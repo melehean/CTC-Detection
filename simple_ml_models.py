@@ -4,15 +4,21 @@ import numpy as np
 
 
 class Model:
-    def __init__(self, model, train_data, train_true_results, test_data, test_true_results, fold_number):
+    def __init__(self, model, train_data, train_true_results, test_data, test_true_results, fold_number,
+                 minus_one_one_values=False):
         self.model = model
         self.train_data = train_data
-        self.train_true_results = train_true_results
         self.fold_number = fold_number
-        self.scoring = ['balanced_accuracy', 'roc_auc', 'precision', 'recall', 'f1']
-
         self.test_data = test_data
-        self.test_true_results = test_true_results
+
+        if minus_one_one_values:
+            self.test_true_results = test_true_results.replace([0, 1], [1, -1])
+            self.train_true_results = train_true_results.replace([0, 1], [1, -1])
+        else:
+            self.test_true_results = test_true_results
+            self.train_true_results = train_true_results
+
+        self.scoring = ['balanced_accuracy', 'roc_auc', 'precision', 'recall', 'f1']
         self.test_balanced_accuracy_list = []
         self.test_roc_auc_list = []
         self.test_f1_score_list = []
