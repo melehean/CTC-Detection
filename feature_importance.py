@@ -40,7 +40,7 @@ class FeatureImportance:
               "  (" + str(100 * len(genes_that_matter) / len(zipped)) + "%)")
         genes_importances = list(zip(*genes_that_matter))
         plt.plot(genes_importances[1], genes_importances[0])
-        plt.title("Importances of genes that matter in prediction (" + str(100 * len(genes_that_matter) / len(
+        plt.title("Highest values of logistic regression gene coefficients (" + str(100 * len(genes_that_matter) / len(
             zipped)) + "% of all genes)" + "\nPositive values mean genes, which predict cancer,\nnegative values are genes, which predict absence of cancer")
         plt.xticks(rotation=90)
         plt.tick_params(axis='x', which='major', labelsize=6)
