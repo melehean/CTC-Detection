@@ -4,6 +4,7 @@ import scipy.cluster.hierarchy as sch
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from sklearn import metrics
 
 
 def draw_dendrogram(data, linkage_method, p):
@@ -47,3 +48,17 @@ def calculate_statistics(data, true_results):
     statistics['p_values'] = p_values
 
     return statistics.sort_values(by="p_values")
+
+
+def display_autoencoder_metrics(model, train_data, test_data, cancer_data):
+    test_predictions = model.predict(test_data)
+    train_predictions = model.predict(train_data)
+    cancer_data_predictions = model.predict(cancer_data)
+
+    test_score = np.sqrt(metrics.mean_squared_error(test_predictions, test_data))
+    train_score = np.sqrt(metrics.mean_squared_error(train_predictions, train_data))
+    cancer_data_score = np.sqrt(metrics.mean_squared_error(cancer_data_predictions, cancer_data))
+
+    print(f"Train RMSE: {train_score}")
+    print(f"Test RMSE: {test_score}")
+    print(f"Cancer data RMSE: {cancer_data_score}")
