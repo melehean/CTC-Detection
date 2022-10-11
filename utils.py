@@ -50,15 +50,11 @@ def calculate_statistics(data, true_results):
     return statistics.sort_values(by="p_values")
 
 
-def display_autoencoder_metrics(model, train_data, test_data, cancer_data):
-    test_predictions = model.predict(test_data)
-    train_predictions = model.predict(train_data)
-    cancer_data_predictions = model.predict(cancer_data)
+def display_neural_network_metrics(model, batch_size_value, data, true_results, set_name):
+    results = model.evaluate(data, true_results, batch_size=batch_size_value)
 
-    test_score = np.sqrt(metrics.mean_squared_error(test_predictions, test_data))
-    train_score = np.sqrt(metrics.mean_squared_error(train_predictions, train_data))
-    cancer_data_score = np.sqrt(metrics.mean_squared_error(cancer_data_predictions, cancer_data))
-
-    print(f"Train RMSE: {train_score}")
-    print(f"Test RMSE: {test_score}")
-    print(f"Cancer data RMSE: {cancer_data_score}")
+    print(f"{set_name} loss: {results[0]}")
+    print(f"{set_name} binary accuracy: {results[1]}")
+    print(f"{set_name} auc: {results[2]}")
+    print(f"{set_name} precision: {results[3]}")
+    print(f"{set_name} recall: {results[4]}")
