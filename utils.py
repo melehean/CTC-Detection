@@ -58,3 +58,14 @@ def display_neural_network_metrics(model, batch_size_value, data, true_results, 
     print(f"{set_name} auc: {results[2]}")
     print(f"{set_name} precision: {results[3]}")
     print(f"{set_name} recall: {results[4]}")
+
+
+def get_best_shap_features(shap_results, feature_names, amount):
+    rf_result_x = pd.DataFrame(shap_results[0], columns=feature_names)
+    vals = np.abs(rf_result_x.values).mean(0)
+    shap_importance = pd.DataFrame(list(zip(feature_names, vals)),
+                                   columns=['col_name', 'feature_importance_vals'])
+    shap_importance.sort_values(by=['feature_importance_vals'],
+                                ascending=False, inplace=True)
+    best_features = list(shap_importance.head(amount)['col_name'])
+    return best_features
