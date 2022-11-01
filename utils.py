@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn import metrics
+from sklearn.feature_selection import mutual_info_classif
 
 
 def draw_dendrogram(data, linkage_method, p):
@@ -46,6 +47,7 @@ def calculate_statistics(data, true_results):
 
     p_values = np.where(statistics["variance_check"], stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = True).pvalue, stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var = False).pvalue)
     statistics['p_values'] = p_values
+    statistics["information_gain"] = mutual_info_classif(data, true_results, random_state=42)
 
     return statistics.sort_values(by="p_values")
 
