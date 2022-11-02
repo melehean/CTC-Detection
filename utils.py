@@ -75,3 +75,14 @@ def get_best_shap_features(shap_results, feature_names, amount):
 
 def get_best_metrics(clfs_names, metric):
     return [clfs_names[x] for x in [idx for idx, x in enumerate(metric) if x == max(metric)]]
+
+
+def variance_between(d1, d2):
+    d = pd.concat([d1, d2], axis=0)
+    
+    p1 = len(d1)/len(d)
+    p2 = len(d2)/len(d)
+    
+    var = (p1*p2)*pow((d1.mean()-d2.mean()), 2)
+    
+    return var
