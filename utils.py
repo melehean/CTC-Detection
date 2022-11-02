@@ -71,3 +71,7 @@ def get_best_shap_features(shap_results, feature_names, amount):
                                 ascending=False, inplace=True)
     best_features = list(shap_importance.head(amount)['col_name'])
     return best_features
+
+
+def get_best_metrics(clfs_names, metric):
+    return [clfs_names[x] for x in [idx for idx, x in enumerate(metric) if x == max(metric)]]
