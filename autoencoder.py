@@ -1,54 +1,80 @@
 import numpy as np
-from sklearn import metrics
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    roc_auc_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
 
 class Autoencoder:
-    def __init__(self, model, train_data, test_data, cancer_data):
+    def __init__(
+        self,
+        model,
+        healthy_train_data,
+        healthy_test_data,
+        cancer_train_data,
+        cancer_test_data,
+    ):
         self.model = model
-        self.train_data = train_data
-        self.test_data = test_data
-        self.cancer_data = cancer_data
-        self.cancer_rmse = None
-        self.test_rmse = None
-        self.train_rmse = None
-        self._calculate_rmse_list()
+        self.healthy_train_data = healthy_train_data
+        self.healthy_test_data = healthy_test_data
+        self.cancer_train_data = cancer_train_data
+        self.cancer_test_data = cancer_test_data
+        self.cancer_train_rmse = None
+        self.cancer_test_rmse = None
+        self.healthy_test_rmse = None
+        self.healthy_train_rmse = None
+
+        self.threshold = self._calculate_threshold()
 
     def _calculate_rmse_list(self):
-        test_predictions = self.model.predict(self.test_data)
-        train_predictions = self.model.predict(self.train_data)
-        cancer_predictions = self.model.predict(self.cancer_data)
+        self.cancer_train_rmse = self._calculate_rmse_for_data(self.cancer_train_data)
+        self.cancer_test_rmse = self._calculate_rmse_for_data(self.cancer_test_data)
+        self.healthy_test_rmse = self._calculate_rmse_for_data(self.healthy_test_data)
+        self.healthy_train_rmse = self._calculate_rmse_for_data(self.healthy_train_data)
 
-        self.cancer_rmse = np.sqrt(np.mean((cancer_predictions - self.cancer_data) ** 2, axis=1))
-        self.test_rmse = np.sqrt(np.mean((test_predictions - self.test_data) ** 2, axis=1))
-        self.train_rmse = np.sqrt(np.mean((train_predictions - self.train_data) ** 2, axis=1))
+    def _calculate_rmse_for_data(self, data):
+        predictions = self.model.predict(data)
+        rmse = np.sqrt(np.mean((predictions - data) ** 2, axis=1))
+        return rmse
 
     def display_average_rmse(self):
-        print(f"Train RMSE: {np.mean(self.train_rmse)}")
-        print(f"Test RMSE: {np.mean(self.test_rmse)}")
-        print(f"Cancer data RMSE: {np.mean(self.cancer_rmse)}")
+        print(f"Healthy train RMSE: {np.mean(self.healthy_train_rmse)}")
+        print(f"Healthy test RMSE: {np.mean(self.healthy_test_rmse)}")
+        print(f"Cancer train RMSE: {np.mean(self.cancer_train_rmse)}")
+        print(f"Cancer test RMSE: {np.mean(self.cancer_test_rmse)}")
+        print(f"Threshold: {self.threshold}")
 
-    def calculate_threshold(self):
-        cancer_mean = np.mean(self.cancer_rmse)
-        test_mean = np.mean(self.test_rmse)
-        train_mean = np.mean(self.train_rmse)
-        healthy_max = max(train_mean, test_mean)
+    def _calculate_threshold(self):
+        self._calculate_rmse_list()
+        cancer_train_mean = np.mean(self.cancer_train_rmse)
+        healthy_train_mean = np.mean(self.healthy_train_rmse)
+        return (cancer_train_mean + healthy_train_mean) / 2
 
-        return (cancer_mean + healthy_max) / 2
+    def predict(self, data):
+        rmse = self._calculate_rmse_for_data(data)
+        results = np.zeros(len(data))
+        for i in range(len(data)):
+            if rmse[i] >= self.threshold:
+                results[i] = 1
+        return results
 
-    def _get_classification_results(self):
-        threshold = self.calculate_threshold()
-        cancer_results = self.cancer_rmse >= threshold
-        test_results = self.test_rmse < threshold
-        train_results = self.train_rmse < threshold
-        return train_results, test_results, cancer_results
+    def display_regular_metrics(self, data, classes, set_name):
+        predictions = self.predict(data)
 
-    @staticmethod
-    def _display_set_metrics(results, set_name):
-        accuracy = len(results[results == 1]) / len(results)
-        print(f"{set_name} accuracy: {accuracy}")
+        balanced_accuracy = balanced_accuracy_score(classes, predictions)
+        print(f"{set_name} balanced accuracy: {balanced_accuracy}")
 
-    def display_classification_metrics(self):
-        train_results, test_results, cancer_results = self._get_classification_results()
-        self._display_set_metrics(train_results, "Healthy Train")
-        self._display_set_metrics(test_results, "Healthy Test")
-        self._display_set_metrics(cancer_results, "Cancer")
+        auc = roc_auc_score(classes, predictions)
+        print(f"{set_name} AUC: {auc}")
+
+        f1 = f1_score(classes, predictions)
+        print(f"{set_name} f1 score: {f1}")
+
+        precision = precision_score(classes, predictions)
+        print(f"{set_name} precision: {precision}")
+
+        recall = recall_score(classes, predictions)
+        print(f"{set_name} recall: {recall}")
