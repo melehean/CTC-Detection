@@ -67,9 +67,6 @@ class Autoencoder:
         balanced_accuracy = balanced_accuracy_score(classes, predictions)
         print(f"{set_name} balanced accuracy: {balanced_accuracy}")
 
-        auc = roc_auc_score(classes, predictions)
-        print(f"{set_name} AUC: {auc}")
-
         f1 = f1_score(classes, predictions)
         print(f"{set_name} f1 score: {f1}")
 
