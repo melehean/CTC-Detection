@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.stats as stats
+from scipy.stats import ttest_ind, shapiro, levene, ranksums
 import scipy.cluster.hierarchy as sch
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -42,37 +42,32 @@ def calculate_statistics(data, true_results):
     statistics["ctc_std"] = np.std(cancer_cells_data)
     statistics["other_cells_std"] = np.std(healthy_cells_data)
 
-    variance_check_1 = (
-        statistics["ctc_variance"] / statistics["other_cells_variance"] < 4
-    )
-    variance_check_2 = (
-        statistics["other_cells_variance"] / statistics["ctc_variance"] < 4
-    )
-    statistics["variance_check"] = variance_check_1 & variance_check_2
+    levene_test = calculate_levene_test(cancer_cells_data, healthy_cells_data)
+    shapiro_test = calculate_shapiro_test(cancer_cells_data, healthy_cells_data)
 
-    t_statistics = np.where(
-        statistics["variance_check"],
-        stats.ttest_ind(
-            healthy_cells_data, cancer_cells_data, equal_var=True
-        ).statistic,
-        stats.ttest_ind(
-            healthy_cells_data, cancer_cells_data, equal_var=False
-        ).statistic,
-    )
-    t_statistics = np.absolute(t_statistics)
-    statistics["t_test"] = t_statistics
+    for column in data.columns:
+        if (
+            shapiro_test.at[column, "cancer-cells-p-values"] > 0.05
+            and shapiro_test.at[column, "healthy-cells-p-values"] > 0.05
+        ):
+            is_variance_equal = levene_test.at[column, "p-values"] > 0.05
 
-    p_values = np.where(
-        statistics["variance_check"],
-        stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var=True).pvalue,
-        stats.ttest_ind(healthy_cells_data, cancer_cells_data, equal_var=False).pvalue,
-    )
-    statistics["p_values"] = p_values
+            _, p_value = ttest_ind(
+                cancer_cells_data[column],
+                healthy_cells_data[column],
+                equal_var=is_variance_equal,
+            )
+            statistics.at[column, "p-values"] = p_value
+
+        else:
+            _, p_value = ranksums(cancer_cells_data[column], healthy_cells_data[column])
+            statistics.at[column, "p-values"] = p_value
+
     statistics["information_gain"] = mutual_info_classif(
-        data, true_results, random_state=42
+        data, true_results.values.ravel(), random_state=42
     )
 
-    return statistics.sort_values(by="p_values")
+    return statistics.sort_values(by="p-values")
 
 
 def display_neural_network_metrics(
@@ -115,3 +110,21 @@ def variance_between(d1, d2):
     var = (p1 * p2) * pow((d1.mean() - d2.mean()), 2)
 
     return var
+
+
+def calculate_levene_test(cancer_cells_data, healthy_cells_data):
+    p_values = pd.DataFrame(index=healthy_cells_data.columns)
+    for column in healthy_cells_data.columns:
+        _, p_value = levene(healthy_cells_data[column], cancer_cells_data[column])
+        p_values.at[column, "p-values"] = p_value
+    return p_values
+
+
+def calculate_shapiro_test(cancer_cells_data, healthy_cells_data):
+    shapiro_test = pd.DataFrame(index=healthy_cells_data.columns)
+    for column in healthy_cells_data.columns:
+        _, healthy_cells_p_value = shapiro(healthy_cells_data[column])
+        _, cancer_cells_p_value = shapiro(cancer_cells_data[column])
+        shapiro_test.at[column, "cancer-cells-p-values"] = cancer_cells_p_value
+        shapiro_test.at[column, "healthy-cells-p-values"] = healthy_cells_p_value
+    return shapiro_test
