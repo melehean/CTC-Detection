@@ -60,6 +60,7 @@ class Model:
 
     def gather_test_results(self, model):
         predictions = model.predict(self.test_data)
+        predictions = predictions.flatten()
 
         test_balanced_accuracy = balanced_accuracy_score(
             self.test_true_results, predictions
@@ -76,19 +77,13 @@ class Model:
             )
             self.test_roc_auc_list.append(test_roc_auc)
 
-        test_precision = precision_score(
-            self.test_true_results, predictions, average="weighted"
-        )
+        test_precision = precision_score(self.test_true_results, predictions)
         self.test_precision_list.append(test_precision)
 
-        test_recall = recall_score(
-            self.test_true_results, predictions, average="weighted"
-        )
+        test_recall = recall_score(self.test_true_results, predictions)
         self.test_recall_list.append(test_recall)
 
-        test_f1_score = f1_score(
-            self.test_true_results, predictions, average="weighted"
-        )
+        test_f1_score = f1_score(self.test_true_results, predictions)
         self.test_f1_score_list.append(test_f1_score)
 
     def display_test_results(self):
