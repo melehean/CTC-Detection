@@ -167,3 +167,41 @@ class Data:
             cut_by_max_cancer_train_data,
             cut_by_max_cancer_test_data,
         )
+
+    def get_filtered_by_zero_data(self, train_data, test_data, threshold):
+        healthy_cells_train_indices = np.where(self.train_true_results == 0)[0]
+        healthy_train_data = train_data.iloc[healthy_cells_train_indices]
+
+        filtered_by_zero_values_train_data = train_data
+        filtered_by_zero_values_test_data = test_data
+        number_of_deleted_columns = 0
+
+        for (columnName, columnData) in train_data.iteritems():
+            num_of_zero_values = (train_data.iloc[healthy_cells_train_indices][columnName]==0).sum()
+            if num_of_zero_values > threshold*len(train_data[columnName]):
+                filtered_by_zero_values_train_data.drop(columns=[columnName], axis=1, inplace=True)
+                filtered_by_zero_values_test_data.drop(columns=[columnName], axis=1, inplace=True)
+                number_of_deleted_columns += 1
+
+        print(f'Number of deleted columns: {number_of_deleted_columns}')
+
+        healthy_cells_train_indices = np.where(self.train_true_results == 0)[0]
+        filtered_by_zero_healthy_train_data = filtered_by_zero_values_train_data.iloc[healthy_cells_train_indices]
+        
+        healthy_cells_test_indices = np.where(self.test_true_results == 0)[0]
+        filtered_by_zero_healthy_test_data = filtered_by_zero_values_test_data.iloc[healthy_cells_test_indices]
+
+        cancer_cells_train_indices = np.where(self.train_true_results == 1)[0]
+        cancer_train_data = filtered_by_zero_values_train_data.iloc[cancer_cells_train_indices]
+
+        cancer_cells_test_indices = np.where(self.test_true_results == 1)[0]
+        cancer_test_data = filtered_by_zero_values_test_data.iloc[cancer_cells_test_indices]
+
+        return (
+            filtered_by_zero_values_train_data, 
+            filtered_by_zero_values_test_data, 
+            filtered_by_zero_healthy_train_data, 
+            filtered_by_zero_healthy_test_data, 
+            cancer_train_data, 
+            cancer_test_data
+        )
