@@ -115,6 +115,23 @@ class Data:
         ]
         return cut_by_max_train_data, cut_by_max_test_data
 
+    def summary(
+        self,
+    ):
+        healthy_cells_train_indices = np.where(self.train_true_results == 0)[0]
+        cancer_cells_train_indices = np.where(self.train_true_results == 1)[0]
+
+        healthy_cells_test_indices = np.where(self.test_true_results == 0)[0]
+        cancer_cells_test_indices = np.where(self.test_true_results == 1)[0]
+
+        print(f"Total cells number in train data: {len(self.train_true_results)}")
+        print(f"CTC cells number in train data: {len(cancer_cells_train_indices)}")
+        print(f"WBC cells number in train data: {len(healthy_cells_train_indices)}\n")
+
+        print(f"Total cells number in test data: {len(self.test_true_results)}")
+        print(f"CTC cells number in test data: {len(cancer_cells_test_indices)}")
+        print(f"WBC cells number in test data: {len(healthy_cells_test_indices)}")
+
     @staticmethod
     def cut_data_by_mean(train_data, test_data, threshold):
         columns_bool_values = train_data.mean() > threshold  # 0.6

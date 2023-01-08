@@ -63,6 +63,25 @@ class AdditionalTestSet:
         self.prepare_test_classes_numbers(sample_info)
         self.prepare_test_classes_names(sample_info)
 
+    def summary(
+        self,
+    ):
+        healthy_cells_train_indices = np.where(self.train_classes == 0)[0]
+        cancer_cells_train_indices = np.where(self.train_classes == 1)[0]
+
+        healthy_cells_test_indices = np.where(self.test_classes_names == "WBC")[0]
+        cancer_cells_test_indices = np.where(self.test_classes_names == "CTC")[0]
+        mix_cells_test_indices = np.where(self.test_classes_names == "CTC-WBC")[0]
+
+        print(f"Total cells number in train data: {len(self.train_classes)}")
+        print(f"CTC cells number in train data: {len(cancer_cells_train_indices)}")
+        print(f"WBC cells number in train data: {len(healthy_cells_train_indices)}\n")
+
+        print(f"Total cells number in test data: {len(self.test_classes)}")
+        print(f"CTC cells number in test data: {len(cancer_cells_test_indices)}")
+        print(f"WBC cells number in test data: {len(healthy_cells_test_indices)}")
+        print(f"CTC-WBC cells number in test data: {len(mix_cells_test_indices)}")
+
     @staticmethod
     def cut_data_by_mean(train_data, test_data, threshold):
         columns_bool_values = train_data.mean() > threshold  # 0.6
