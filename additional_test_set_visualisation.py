@@ -95,10 +95,13 @@ class Visualisation:
             fig.set_figwidth(12)
             ax[0].boxplot(self.average_cancer_cells_probabilities)
             ax[0].set_title("Cancer prediction")
+            ax[0].set_ylim(-0.05, 1.05)
             ax[1].boxplot(self.average_healthy_cells_probabilities)
             ax[1].set_title("Healthy prediction")
+            ax[1].set_ylim(-0.05, 1.05)
             ax[2].boxplot(self.average_mix_cells_probabilites)
             ax[2].set_title("CTC-WBC prediction")
+            ax[2].set_ylim(-0.05, 1.05)
             plt.show()
         else:
             fig, ax = plt.subplots(1, 2)
@@ -106,8 +109,10 @@ class Visualisation:
             fig.set_figwidth(12)
             ax[0].boxplot(self.average_cancer_cells_probabilities)
             ax[0].set_title("Cancer prediction")
+            ax[0].set_ylim(-0.05, 1.05)
             ax[1].boxplot(self.average_healthy_cells_probabilities)
             ax[1].set_title("Healthy prediction")
+            ax[1].set_ylim(-0.05, 1.05)
             plt.show()
 
     def draw_roc_curve_from_probabilities(self):
