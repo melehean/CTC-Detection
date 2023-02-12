@@ -34,16 +34,28 @@ class AdditionalTestSet:
 
     def prepare_test_classes_names(self, sample_info):
         self.test_classes_names = sample_info.set_index("Sample")
-        self.test_classes_names = self.test_classes_names.drop(columns=["Group"])
+
+        if "GroupDetailed" in self.test_classes_names.columns.values:
+            self.test_classes_names = self.test_classes_names.drop(
+                columns=["GroupDetailed"]
+            )
+        if "Id" in self.test_classes_names.columns.values:
+            self.test_classes_names = self.test_classes_names.drop(columns=["Id"])
+
         self.test_classes_names = self.test_classes_names.squeeze()
 
     def prepare_test_classes_numbers(self, sample_info):
         self.test_classes = sample_info.set_index("Sample")
-        self.test_classes = self.test_classes.drop(columns=["Group"])
-        self.test_classes[self.test_classes["GroupDetailed"] == "WBC"] = 0
+
+        if "GroupDetailed" in self.test_classes.columns.values:
+            self.test_classes = self.test_classes.drop(columns=["GroupDetailed"])
+        if "Id" in self.test_classes.columns.values:
+            self.test_classes = self.test_classes.drop(columns=["Id"])
+
+        self.test_classes[self.test_classes["Group"] == "WBC"] = 0
         self.test_classes[
-            (self.test_classes["GroupDetailed"] == "CTC")
-            | (self.test_classes["GroupDetailed"] == "CTC-WBC")
+            (self.test_classes["Group"] == "CTC")
+            | (self.test_classes["Group"] == "CTC-WBC")
         ] = 1
         self.test_classes = self.test_classes.astype(int)
         self.test_classes = self.test_classes.squeeze()
@@ -51,15 +63,22 @@ class AdditionalTestSet:
     def prepare_train_classes(self, file_path):
         self.train_classes = pd.read_csv(file_path, sep="\t")
         self.train_classes = self.train_classes.set_index("Sample")
+
+        if "GroupDetailed" in self.train_classes.columns.values:
+            self.train_classes = self.train_classes.drop(columns=["GroupDetailed"])
+        if "Id" in self.train_classes.columns.values:
+            self.train_classes = self.train_classes.drop(columns=["Id"])
+
         self.train_classes[self.train_classes["Group"] == "WBC"] = 0
-        self.train_classes[self.train_classes["Group"] == "CTC"] = 1
+        self.train_classes[
+            (self.train_classes["Group"] == "CTC")
+            | (self.train_classes["Group"] == "CTC-WBC")
+        ] = 1
         self.train_classes = self.train_classes.astype(int)
         self.train_classes = self.train_classes.squeeze()
 
     def prepare_test_classes(self, file_path):
-        sample_info = pd.read_csv(
-            "data/CTC_new_28_12_2022/sampleInfoTest.tsv", sep="\t"
-        )
+        sample_info = pd.read_csv(file_path, sep="\t")
         self.prepare_test_classes_numbers(sample_info)
         self.prepare_test_classes_names(sample_info)
 
