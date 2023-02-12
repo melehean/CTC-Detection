@@ -58,6 +58,8 @@ class Model:
         for cross_validation_model in cv_results["estimator"]:
             self.gather_test_results(cross_validation_model)
 
+        return cv_results["estimator"]
+
     def gather_test_results(self, model):
         predictions = model.predict(self.test_data)
         predictions = predictions.flatten()
