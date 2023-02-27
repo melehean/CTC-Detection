@@ -53,7 +53,7 @@ class Model:
             scoring=self.scoring,
             return_estimator=True,
         )
-        # Model.display_metrics(cv_results)
+        Model.display_metrics(cv_results)
 
         for cross_validation_model in cv_results["estimator"]:
             self.gather_test_results(cross_validation_model)

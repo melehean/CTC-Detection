@@ -100,6 +100,12 @@ class AdditionalTestSet:
         print(f"CTC cells number in test data: {len(cancer_cells_test_indices)}")
         print(f"WBC cells number in test data: {len(healthy_cells_test_indices)}")
         print(f"CTC-WBC cells number in test data: {len(mix_cells_test_indices)}")
+        
+    def statistics(self):
+        healthy_cells_train_indices = np.where(self.train_classes == 0)[0]
+        cancer_cells_train_indices = np.where(self.train_classes == 1)[0]
+        
+        
 
     @staticmethod
     def cut_data_by_mean(train_data, test_data, threshold):
