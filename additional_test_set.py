@@ -16,6 +16,8 @@ class AdditionalTestSet:
         self.test_data = None
         self.test_classes = None
         self.train_classes = None
+        self.test_classes_names = None
+        self.train_classes_names = None
 
         self.load_train_data(train_data_path)
         self.load_test_data(test_data_path)
@@ -44,6 +46,18 @@ class AdditionalTestSet:
 
         self.test_classes_names = self.test_classes_names.squeeze()
 
+    def prepare_train_classes_names(self, sample_info):
+        self.train_classes_names = sample_info.set_index("Sample")
+
+        if "GroupDetailed" in self.train_classes_names.columns.values:
+            self.train_classes_names = self.train_classes_names.drop(
+                columns=["GroupDetailed"]
+            )
+        if "Id" in self.train_classes_names.columns.values:
+            self.train_classes_names = self.train_classes_names.drop(columns=["Id"])
+
+        self.train_classes_names = self.train_classes_names.squeeze()
+
     def prepare_test_classes_numbers(self, sample_info):
         self.test_classes = sample_info.set_index("Sample")
 
@@ -60,9 +74,8 @@ class AdditionalTestSet:
         self.test_classes = self.test_classes.astype(int)
         self.test_classes = self.test_classes.squeeze()
 
-    def prepare_train_classes(self, file_path):
-        self.train_classes = pd.read_csv(file_path, sep="\t")
-        self.train_classes = self.train_classes.set_index("Sample")
+    def prepare_train_classes_numbers(self, sample_info):
+        self.train_classes = sample_info.set_index("Sample")
 
         if "GroupDetailed" in self.train_classes.columns.values:
             self.train_classes = self.train_classes.drop(columns=["GroupDetailed"])
@@ -82,11 +95,17 @@ class AdditionalTestSet:
         self.prepare_test_classes_numbers(sample_info)
         self.prepare_test_classes_names(sample_info)
 
+    def prepare_train_classes(self, file_path):
+        sample_info = pd.read_csv(file_path, sep="\t")
+        self.prepare_train_classes_numbers(sample_info)
+        self.prepare_train_classes_names(sample_info)
+
     def summary(
         self,
     ):
-        healthy_cells_train_indices = np.where(self.train_classes == 0)[0]
-        cancer_cells_train_indices = np.where(self.train_classes == 1)[0]
+        healthy_cells_train_indices = np.where(self.train_classes_names == "WBC")[0]
+        cancer_cells_train_indices = np.where(self.train_classes_names == "CTC")[0]
+        mix_cells_train_indices = np.where(self.train_classes_names == "CTC-WBC")[0]
 
         healthy_cells_test_indices = np.where(self.test_classes_names == "WBC")[0]
         cancer_cells_test_indices = np.where(self.test_classes_names == "CTC")[0]
@@ -94,18 +113,13 @@ class AdditionalTestSet:
 
         print(f"Total cells number in train data: {len(self.train_classes)}")
         print(f"CTC cells number in train data: {len(cancer_cells_train_indices)}")
-        print(f"WBC cells number in train data: {len(healthy_cells_train_indices)}\n")
+        print(f"WBC cells number in train data: {len(healthy_cells_train_indices)}")
+        print(f"CTC-WBC cells number in test data: {len(mix_cells_train_indices)}\n")
 
         print(f"Total cells number in test data: {len(self.test_classes)}")
         print(f"CTC cells number in test data: {len(cancer_cells_test_indices)}")
         print(f"WBC cells number in test data: {len(healthy_cells_test_indices)}")
         print(f"CTC-WBC cells number in test data: {len(mix_cells_test_indices)}")
-        
-    def statistics(self):
-        healthy_cells_train_indices = np.where(self.train_classes == 0)[0]
-        cancer_cells_train_indices = np.where(self.train_classes == 1)[0]
-        
-        
 
     @staticmethod
     def cut_data_by_mean(train_data, test_data, threshold):
