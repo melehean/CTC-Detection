@@ -130,7 +130,7 @@ class PCADimensionReduction:
         return top_variables
 
 
-def display_2d_plot(reducer, label, train_data, train_true_results, seed):
+def display_2d_plot(reducer, label, train_data, train_true_results):
     data = reducer.fit_transform(train_data)
 
     cancer_cells_indices = np.where(train_true_results == 1)[0]

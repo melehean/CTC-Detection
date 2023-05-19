@@ -190,4 +190,4 @@ def get_non_zero_feature_importance_of_tree_base_classifier(models, data):
         (feature_importance != 0).any(axis=1)
     ]
     final_features = final_feature_importance.index.values
-    return final_features
+    return final_features, final_feature_importance
