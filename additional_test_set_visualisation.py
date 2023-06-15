@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import ConfusionMatrixDisplay
+import seaborn as sns
 
 
 class Visualisation:
@@ -88,19 +89,21 @@ class Visualisation:
         )
         self.average_all_cells_probabilites = np.mean(all_cells_probabilites, axis=0)
 
-    def plot_predictions_boxplot(self):
+    def plot_predictions_boxplot(
+        self, cancer_title=None, healthy_title=None, mixed_title=None
+    ):
         if self.mix_boxplot:
             fig, ax = plt.subplots(1, 3)
             fig.set_figheight(4)
             fig.set_figwidth(12)
             ax[0].boxplot(self.average_cancer_cells_probabilities)
-            ax[0].set_title("Cancer prediction")
+            ax[0].set_title(cancer_title)
             ax[0].set_ylim(-0.05, 1.05)
             ax[1].boxplot(self.average_healthy_cells_probabilities)
-            ax[1].set_title("Healthy prediction")
+            ax[1].set_title(healthy_title)
             ax[1].set_ylim(-0.05, 1.05)
             ax[2].boxplot(self.average_mix_cells_probabilites)
-            ax[2].set_title("CTC-WBC prediction")
+            ax[2].set_title(mixed_title)
             ax[2].set_ylim(-0.05, 1.05)
             plt.show()
         else:
@@ -108,10 +111,10 @@ class Visualisation:
             fig.set_figheight(4)
             fig.set_figwidth(12)
             ax[0].boxplot(self.average_cancer_cells_probabilities)
-            ax[0].set_title("Cancer prediction")
+            ax[0].set_title(cancer_title)
             ax[0].set_ylim(-0.05, 1.05)
             ax[1].boxplot(self.average_healthy_cells_probabilities)
-            ax[1].set_title("Healthy prediction")
+            ax[1].set_title(healthy_title)
             ax[1].set_ylim(-0.05, 1.05)
             plt.show()
 
@@ -122,10 +125,22 @@ class Visualisation:
         plt.legend(loc=4)
         plt.show()
 
-    def display_confusion_matrix(self):
+    def display_confusion_matrix(self, cancer_category, healthy_category):
         predictions = np.round(self.average_all_cells_probabilites)
-        cm = confusion_matrix(self.classes, predictions)
+        cf_matrix = confusion_matrix(self.classes, predictions)
+        categories = [healthy_category, cancer_category]
 
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-        disp.plot()
-        plt.show()
+        group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
+        group_percentages = [
+            "{0:.2%}".format(value) for value in cf_matrix.flatten() / np.sum(cf_matrix)
+        ]
+        labels = [f"{v1} ({v2})" for v1, v2 in zip(group_counts, group_percentages)]
+        labels = np.asarray(labels).reshape(2, 2)
+        sns.heatmap(
+            cf_matrix,
+            annot=labels,
+            fmt="",
+            cmap="Blues",
+            xticklabels=categories,
+            yticklabels=categories,
+        )
