@@ -187,7 +187,7 @@ def get_non_zero_feature_importance_of_tree_base_classifier(models, data):
         index=data.columns, data=average_feature_importance
     )
     final_feature_importance = feature_importance.loc[
-        (feature_importance != 0).any(axis=1)
+        (feature_importance > 0.01).any(axis=1)
     ]
     final_features = final_feature_importance.index.values
-    return final_features, final_feature_importance
+    return final_features
