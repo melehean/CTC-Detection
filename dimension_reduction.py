@@ -143,7 +143,7 @@ def display_2d_plot(reducer, label, train_data, train_true_results):
     cancer_cells_df = pd.DataFrame(cancer_cells_data, columns=("A", "B"))
 
     plt.scatter(
-        healthy_cell_df.A, healthy_cell_df.B, c="lightblue", label="other cells"
+        healthy_cell_df.A, healthy_cell_df.B, c="lightblue", label="PBMC"
     )
     plt.scatter(cancer_cells_df.A, cancer_cells_df.B, c="red", label="CTC")
     plt.xlabel(label + "1")
@@ -170,11 +170,11 @@ def display_2d_plot_with_names(reducer, label, train_data, train_classes_names):
     mixed_cells_df = pd.DataFrame(mixed_cells_data, columns=("A", "B"))
 
     plt.scatter(
-        healthy_cell_df.A, healthy_cell_df.B, c="lightblue", label="other cells"
+        healthy_cell_df.A, healthy_cell_df.B, c="lightblue", label="PBMC"
     )
     plt.scatter(cancer_cells_df.A, cancer_cells_df.B, c="red", label="CTC")
     plt.scatter(
-        mixed_cells_df.A, mixed_cells_df.B, c="green", label="mixed CTC and others"
+        mixed_cells_df.A, mixed_cells_df.B, c="green", label="CTC-PBMC cluster"
     )
     plt.xlabel(label + "1")
     plt.ylabel(label + "2")
